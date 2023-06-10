@@ -3,6 +3,7 @@ from palette import Palette
 
 class Field:
 	def __init__(this,x,y,data=[],char="#"):
+		this.sequence = []
 		this.x=x+1
 		this.y=y+1
 		if data==[]:
