@@ -19,30 +19,44 @@ class Field:
 			print()
 	def line(this, begin, end, char="#"):
 		lawyer = this.matrix
-		deltaX = end[0] - begin[0]
-		deltaY = end[1] - begin[1]
 		def buildByY():
+			print("Build by y")
 			points = []
-			koef = deltaX/deltaY
-			for coorY in range(begin[1], end[1]+1):
-				print(coorY*koef+begin[0], coorY)
-				coorX = round(coorY*koef)+begin[0]
-				if coorX < len(lawyer) and coorY < len(lawyer[0]):
-					points.append((coorX, coorY))
-				else:
-					raise IndexError()
+			koefX = 0
+			if end[0] < begin[0]:
+				koefX = -1
+			else:
+				koefX = 1
+			cornerKoef = (end[0]-begin[0])/(end[1]-begin[1])
+			error = 0
+			x = begin[0]
+			for y in range(begin[1], end[1]+1):
+				if error >= 0.5:
+					x += koefX
+					error -= 1
+				points.append((x, y))
+				print("x: ", x, " y: ", y, " e: ", error)
+				error += cornerKoef
 			for coors in points:
 				lawyer[coors[0]][coors[1]].char = char
 		def buildByX():
+			print("Build by x")
 			points = []
-			koef = deltaY/deltaX
-			for coorX in range(begin[0], end[0]+1):
-				print(coorX, coorX*koef+begin[1])
-				coorY = round(coorX*koef)+begin[1]
-				if coorX < len(lawyer) and coorY < len(lawyer[0]):
-					points.append((coorX, coorY))
-				else:
-					raise IndexError()
+			koefY = 0
+			if end[1] < begin[1]:
+				koefY = -1
+			else:
+				koefY = 1
+			cornerKoef = abs((end[1]-begin[1])/(end[0]-begin[0]))
+			error = 0
+			y = begin[1]
+			for x in range(begin[0], end[0]+1):
+				if error >= 0.5:
+					y += koefY
+					error -= 1
+				points.append((x, y))
+				print("x: ", x, " y: ", y, " e: ", error, " ck: ", cornerKoef)
+				error += cornerKoef
 			for coors in points:
 				lawyer[coors[0]][coors[1]].char = char
 		try:
