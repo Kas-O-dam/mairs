@@ -23,19 +23,27 @@ class Field:
 			print("Build by y")
 			points = []
 			koefX = 0
+			cycleBegin = begin[1]
+			cycleEnd = end[1] + 1
+			beginX = begin[0]
 			if end[0] < begin[0]:
 				koefX = -1
 			else:
 				koefX = 1
-			cornerKoef = (end[0]-begin[0])/(end[1]-begin[1])
+			if begin[1] > end[1]:
+				cycleBegin = end[1]
+				cycleEnd = begin[1] + 1
+				beginX = end[0]
+				koefX = -koefX
+			cornerKoef = abs(end[0]-begin[0])/abs(end[1]-begin[1])
 			error = 0
-			x = begin[0]
-			for y in range(begin[1], end[1]+1):
+			x = beginX
+			for y in range(cycleBegin, cycleEnd):
 				if error >= 0.5:
 					x += koefX
 					error -= 1
 				points.append((x, y))
-				print("x: ", x, " y: ", y, " e: ", error)
+				print("x: ", x, " y: ", y, " e: ", error, " ck: ", cornerKoef)
 				error += cornerKoef
 			for coors in points:
 				lawyer[coors[0]][coors[1]].char = char
@@ -43,14 +51,22 @@ class Field:
 			print("Build by x")
 			points = []
 			koefY = 0
+			cycleBegin = begin[0]
+			cycleEnd = end[0] + 1
+			beginY = begin[1]
 			if end[1] < begin[1]:
 				koefY = -1
 			else:
 				koefY = 1
+			if begin[0] > end[0]:
+				cycleBegin = end[0]
+				cycleEnd = begin[0] + 1
+				beginY = end[1]
+				koefY = -koefY
 			cornerKoef = abs((end[1]-begin[1])/(end[0]-begin[0]))
 			error = 0
-			y = begin[1]
-			for x in range(begin[0], end[0]+1):
+			y = beginY
+			for x in range(cycleBegin, cycleEnd):
 				if error >= 0.5:
 					y += koefY
 					error -= 1
@@ -59,10 +75,8 @@ class Field:
 				error += cornerKoef
 			for coors in points:
 				lawyer[coors[0]][coors[1]].char = char
-		try:
+		if abs(begin[0]-end[0]) >= abs(begin[1]-end[1]):
 			buildByX()
-		except IndexError:
-			buildByY()
-		except ZeroDivisionError:
+		else:
 			buildByY()
 		return lawyer

@@ -1,8 +1,14 @@
 from field import Field
 
-f = Field(50, 10)
-f.matrix = f.line((3, 8), (30, 3), '0')
-#f.matrix = f.line((0, 0), (49, 9), '*')
-f.matrix[3][8].char = '+'
-f.matrix[30][3].char = '+'
+f = Field(10, 10)
+# calls for testing
+# f.matrix = f.line((5, 4), (9, 4), '0') # a
+# f.matrix = f.line((9, 4), (5, 4), '1') # a reverse
+# f.matrix = f.line((5, 4), (9, 2), '0') # b
+# f.matrix = f.line((9, 2), (5, 4), '1') # b reverse
+# f.matrix = f.line((5, 4), (9, 0), '0') # c
+# f.matrix = f.line((9, 0), (5, 4), '1') # c reverse
+# f.matrix = f.line((5, 4), (7, 0), '0') # d
+# f.matrix = f.line((7, 0), (5, 4), '1') # d reverse
+# f.matrix = f.line((0, 0), (49, 9), '*')
 f.print()
