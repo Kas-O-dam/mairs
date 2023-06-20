@@ -3,12 +3,11 @@ from palette import Palette
 
 class Field:
 	def __init__(self, x, y, char="#"):
-		self.sequence = list()
+		self.sequence = []
 		self.x=x
 		self.y=y
-		self.sequence.append(self.build_layer())
 		self.default_char = char
-	def build_layer(self, char="#"):
+	def build_layer(self, char=None):
 		matrix=[]
 		for i in range(0, self.x):
 			matrix.append([])
@@ -18,7 +17,9 @@ class Field:
 	def print(self, separate=""):
 		sequence_to_print = self.sequence[0]
 		for index_x, x in enumerate(self.sequence):
+			# print("x: ", x, end="") #
 			for index_y, y in enumerate(x):
+				# print("y: ", y, end="") #
 				for tile in y:
 					match tile.char:
 						case "\n":
@@ -29,10 +30,29 @@ class Field:
 							sequence_to_print[index_x][index_y].char = tile.char + separate
 		for y in range(self.y):
 			for x in range(self.x):
-				print(sequence_to_print[x][y].char + separate, end="")
+				if sequence_to_print[x][y].char != None:
+					print(sequence_to_print[x][y].char + separate, end="")
+				else:
+					print("+", end="")
 			print()
+	def rect(self, begin:list, end:list, char="#"):
+		layer = self.build_layer(char=self.default_char)
+		if end[0] < begin[0]:
+			end[0], begin[0] = begin[0], end[0]
+		if end[1] < begin[1]:
+			end[1], begin[1] = begin[1], end[1]
+		for x in range(begin[0], end[0]):
+			for y in range(begin[1], end[1]):
+				# print("x:", x, " y:", y) #
+				layer[x][y].char = char
+		return layer
+	#	 _        _    _    _    ______
+	#	| |      | |  | \_ | |  |  ____|
+	#	| |      | |  | |\\| |  | |----,
+	#	| |____  | |  | | \\ |  | |----'
+	#	|_____|  |_|  |_|  \_|  |______|
 	def line(self, begin, end, char="#"):
-		layer = self.build_layer()
+		layer = self.build_layer(char=self.default_char)
 		def build_by_y():
 			print("Build by y")
 			points = []

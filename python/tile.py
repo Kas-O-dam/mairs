@@ -1,6 +1,6 @@
 class Tile:
-	def __init__(this,char,rgba):
-		this.char = char
-		this.rgba = rgba
-	def __str__(this):
+	def __init__(self, char, rgba):
+		self.char = char
+		self.rgba = rgba
+	def __str__(self):
 		return this.char

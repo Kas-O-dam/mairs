@@ -1,6 +1,6 @@
 from field import Field
 
-f = Field(10, 10)
+f = Field(10, 10, char="#")
 # calls for testing
 # f.sequence[0] = f.line((5, 4), (9, 4), '0') # a
 # f.sequence.append(f.line((9, 4), (5, 4), '1')) # a reverse
@@ -11,3 +11,8 @@ f = Field(10, 10)
 # f.matrix = f.line((5, 4), (7, 0), '0') # d
 # f.matrix = f.line((7, 0), (5, 4), '1') # d reverse
 # f.matrix = f.line((0, 0), (49, 9), '*')
+
+# f.sequence.append(f.rect([0, 0], [9, 9], char='0'))
+# f.sequence.append(f.rect([3, 2], [8, 7], char='0'))
+# f.sequence.append(f.rect([8, 7], [3, 2], char='0'))
+# f.print()
