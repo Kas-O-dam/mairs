@@ -1,11 +1,27 @@
-class IndexInfo{
-    constructor(message){
-        return message;
+let libMode = "DEBUG" //RELEASE, DEBUG or TURBO DEBUG
+
+class AxesInfo{
+    constructor(who, axes){
+        console.info(`[ %cInfo`, 'color: darkgray; font-size: 14px;', `] ${who} will be build via axes ${axes}`);
+    }
+};
+class BuildSuccess{
+    constructor(who, begin, end){
+        console.info(`[ %cSuccess`, 'color: green; font-size: 14px;', `] ${who} begined from [${begin[0]}, ${begin[1]}] was successfuly build to [${end[0]}, ${end[1]}]`);
     }
 };
 class IndexError{
-    constructor(message){
-        return message;
+    constructor(firstIndex, secondIndex, layer){
+        console.error(`[ %cError`, 'color: red; font-size: 14px;', `] Your indexes${firstIndex}${secondIndex} aren't correct in layer: ${layer}`);
+    }
+};
+
+class Layer{ // this is on future
+    constructor(data, name, height, width){
+        this.data = data;
+        this.name = name;
+        this.height = height;
+        this.width = width;
     }
 };
 
@@ -17,31 +33,78 @@ class Tile{
 };
 
 class Field{
-    constructor(x, y, char, data){
+    constructor(x, y, char, defaultChar=" "){
+        this.layerSequence = [];
         this.x = x;
         this.y = y;
-        this.matrix = [];
-        if(data == undefined){
-            for(let i = 0; i < this.x; i++){
-                this.matrix.push([]);
-                for(let j = 0; j < this.y; j++){
-                    this.matrix[this.matrix.length - 1].push(new Tile(char, 100));
+        this.defaultCharacter = defaultChar;
+    }
+    buildLayer(char=null){
+        let layer = [];
+        for(let i = 0; i < this.x; i++){
+            layer.push([]);
+            for(let j = 0; j < this.y; j++){
+                layer[layer.length - 1].push(new Tile(char, 100));
+            };
+        };
+        return layer;
+    }
+    uniteLayers(sequence){
+        let result = this.buildLayer();
+        for(let layer = 0; layer < sequence.length; layer++){
+            for(let y = 0; y < this.y; y++){
+                for(let x = 0; x < this.x; x++){
+                    if(sequence[layer][x][y].char != null){
+                        //console.log(sequence[layer][x][y]); //
+                        result[x][y].char = sequence[layer][x][y].char
+                    }else{
+                        continue;
+                    };
                 };
             };
         };
+        return result;
     }
-    consolePrint(separate=""){
-        let str = ""
+    getSequenceAsJSON(){
+        let allLayers = this.uniteLayers(this.layerSequence);
+        return JSON.stringify(allLayers);
+    }
+    getSequenceAsString(separate=""){
+        let resultAsString = String();
+        let allLayers = this.uniteLayers(this.layerSequence);
+        console.log(allLayers); //
         for(let y = 0; y < this.y; y++){
             for(let x = 0; x < this.x; x++){
-                str += this.matrix[x][y].char + separate;
+                if(allLayers[x][y].char != null){
+                    resultAsString += allLayers[x][y].char + separate; 
+                }else{
+                    resultAsString += this.defaultCharacter + separate;
+                };
             };
-            str += "\n"
+            resultAsString += "\n"
         };
-        return str
+        return resultAsString
+    }
+    rect(begin, end, char=this.defaultCharacter){
+        let layer = this.buildLayer();
+        let stepSignX = 1;
+        let stepSignY = 1;
+        if( end[0] < begin[0] ){
+            stepSignX = -1;
+        };
+        if( end[1] < begin[1] ){
+            stepSignY = -1;
+        };
+        for(let stepX = begin[0] + 1; stepX <= end[0]; stepX += stepSignX){ // don't ask me: "Why your cycles aren't similar" - if this is working correctly - don't touch to this
+            for(let stepY = begin[1]; stepY < end[1]; stepY += stepSignY){
+                //console.log( "x: ", stepX, " y: ", stepY, "c: ", char ); //
+                layer[stepX][stepY].char = char;
+            };
+        };
+        return layer;
     }
     line(begin, end, char="#"){
-        let lawyer = this.matrix;
+        let layer = this.buildLayer();
         function buildByY(){
             let points = [];
             let koefX = 0;
@@ -68,11 +131,11 @@ class Field{
 					error -= 1;
                 };
 				points.push([x, y]);
-				console.log("x: ", x, " y: ", y, " e: ", error);
+				//console.log("x: ", x, " y: ", y, " e: ", error); //
 				error += cornerKoef
             };
             for(let coors = 0; coors < points.length - 1; coors++){
-                lawyer[points[coors][0]][points[coors][1]].char = char
+                layer[points[coors][0]][points[coors][1]].char = char
             };
         };
         function buildByX(){
@@ -101,11 +164,11 @@ class Field{
 					error -= 1;
                 };
 				points.push([x, y]);
-				console.log("x: ", x, " y: ", y, " e: ", error);
+				//console.log("x: ", x, " y: ", y, " e: ", error); //
 				error += cornerKoef
             };
             for(let coors = 0; coors < points.length - 1; coors++){
-                lawyer[points[coors][0]][points[coors][1]].char = char
+                layer[points[coors][0]][points[coors][1]].char = char
             };
         };
         if(Math.abs(begin[0] - end[0]) > Math.abs(begin[1] - end[1])){
@@ -113,21 +176,27 @@ class Field{
         }else{
             buildByY();
         };
-        return lawyer;
+        return layer;
     };
 };
 
-let f = new Field(10, 10, ".");
+let f = new Field(10, 10, null);
 // calls for testing
-// f.matrix = f.line([5, 4], [9, 4], '0') // a
-// f.matrix = f.line([9, 4], [5, 4], '1') // a reverse
-// f.matrix = f.line([5, 4], [9, 2], '0') // b
-// f.matrix = f.line([9, 2], [5, 4], '1') // b reverse
-// f.matrix = f.line([5, 4], [9, 0], '0') // c
-// f.matrix = f.line([9, 0], [5, 4], '1') // c reverse
-// f.matrix = f.line([5, 4], [7, 0], '0') // d
-// f.matrix = f.line([7, 0], [5, 4], '1') // d reverse
-// f.matrix = f.line([5, 4], [5, 0], '0') // e
-f.matrix = f.line([5, 0], [5, 4], '1') // e reverse
-let str = f.consolePrint("");
+f.layerSequence.push(f.rect([5, 5], [7, 7], "1"));
+f.layerSequence.push(f.line([5, 4], [9, 4], '0')); // a
+// f.layerSequence.push(f.line([9, 4], [5, 4], '1')); // a reverse
+// f.layerSequence.push(f.line([5, 4], [9, 2], '0')); // b
+// f.layerSequence.push(f.line([9, 2], [5, 4], '1')); // b reverse
+// f.layerSequence.push(f.line([5, 4], [9, 0], '0')); // c
+// f.layerSequence.push(f.line([9, 0], [5, 4], '1')); // c reverse
+// f.layerSequence.push(f.line([5, 4], [7, 0], '0')); // d
+// f.layerSequence.push(f.line([7, 0], [5, 4], '1')); // d reverse
+// f.layerSequence.push(f.line([5, 4], [5, 0], '0')); // e
+// f.layerSequence.push(f.line([5, 0], [5, 4], '1')); // e reverse
+let str = f.getSequenceAsString("|");
 console.log(str);
+
+//test for custom errors
+// new IndexError(" 0,", " 0", "layer with index 5");
+// new AxesInfo("Layer with index 5", "x")
+// new BuildSuccess("Layer with index 5", [0, 0], [9, 9]);
