@@ -1,12 +1,15 @@
 from tile import Tile
 from palette import Palette
+from json import dumps
+from json import loads
 
 class Field:
-	def __init__(self, x, y, char="#"):
+	def __init__(self, x, y, char=None):
 		self.sequence = []
 		self.x=x
 		self.y=y
 		self.default_char = char
+		self.change_buffer = list()
 	def build_layer(self, char=None):
 		matrix=[]
 		for i in range(0, self.x):
@@ -14,27 +17,41 @@ class Field:
 			for j in range(0, self.y):
 				matrix[len(matrix)-1].append(Tile(char=char, rgba=Palette[char]))
 		return matrix
+    def unite(self, layers:list):
+        united_layers = self.__from_None_to_space(layers[0])
+        for index_x, x in enumerate(self.sequence):
+            # print("x: ", x, end=" ") #
+            for index_y, y in enumerate(x):
+                # print("y: ", y, end=" ") #
+                for tile in enumerate(y):
+                    match tile[1].char:
+                        case "\n":
+                            continue
+                        case None:
+                            continue
+                        case _ :
+                            united_layers[index_y][tile[0]].char = tile[1].char
+        return united_layers
+	def sequence_to_json(self, layer):
+	    ...
+	#  ____    _____   []
+	# |  _ \  |    \   __
+	# | |_| | | || /  | |
+	# |  __/  |   \   | |
+	# | |     | |\ \  | |
+	# |_|     |_| \_\ |_|
 	def print(self, separate=""):
-		sequence_to_print = self.sequence[0]
-		for index_x, x in enumerate(self.sequence):
-			# print("x: ", x, end="") #
-			for index_y, y in enumerate(x):
-				# print("y: ", y, end="") #
-				for tile in y:
-					match tile.char:
-						case "\n":
-							continue
-						case None:
-							continue
-						case _ :
-							sequence_to_print[index_x][index_y].char = tile.char + separate
+	    sequence_to_print = self.unite(self.sequence)
 		for y in range(self.y):
 			for x in range(self.x):
-				if sequence_to_print[x][y].char != None:
-					print(sequence_to_print[x][y].char + separate, end="")
-				else:
-					print("+", end="")
+				print(sequence_to_print[x][y].char + separate, end="")
 			print()
+	def __from_None_to_space(self, layer):
+	    for y in enumerate(layer):
+	        for tile in enumerate(y[1]):
+	            if tile[1].char == None:
+	                layer[y[0]][tile[0]].char = " "
+	    return layer
 	def rect(self, begin:list, end:list, char="#"):
 		layer = self.build_layer(char=self.default_char)
 		if end[0] < begin[0]:

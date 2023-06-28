@@ -9,7 +9,6 @@ Palette = {
 	'!': 30,
 	';': 20,
 	':': 10,
-	' ': 0,
-	None: 0
+	None: 0 # in fact None is <Space>
 }
 # # & @ $ % ? ! ; :
