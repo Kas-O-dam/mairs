@@ -1,4 +1,4 @@
-let libMode = "DEBUG" //RELEASE, DEBUG or TURBO DEBUG
+let libMode = 'DEBUG' //RELEASE, DEBUG or TURBO DEBUG
 
 class AxesInfo{
     constructor(who, axes){
@@ -33,13 +33,13 @@ class Tile{
 };
 
 class Field{
-    constructor(x, y, char, defaultChar=" "){
-        this.layerSequence = [];
+    constructor(x, y, char, defaultChar=' '){
+        this.sequence = [];
         this.x = x;
         this.y = y;
         this.defaultCharacter = defaultChar;
     }
-    buildLayer(char=null){
+    build(char=null){
         let layer = [];
         for(let i = 0; i < this.x; i++){
             layer.push([]);
@@ -49,8 +49,8 @@ class Field{
         };
         return layer;
     }
-    uniteLayers(sequence){
-        let result = this.buildLayer();
+    unite(sequence){
+        let result = this.build();
         for(let layer = 0; layer < sequence.length; layer++){
             for(let y = 0; y < this.y; y++){
                 for(let x = 0; x < this.x; x++){
@@ -65,14 +65,10 @@ class Field{
         };
         return result;
     }
-    getSequenceAsJSON(){
-        let allLayers = this.uniteLayers(this.layerSequence);
-        return JSON.stringify(allLayers);
-    }
-    getSequenceAsString(separate=""){
+    getSequenceAsString(separate=''){
         let resultAsString = String();
-        let allLayers = this.uniteLayers(this.layerSequence);
-        console.log(allLayers); //
+        let allLayers = this.unite(this.sequence);
+        // console.log(allLayers); //
         for(let y = 0; y < this.y; y++){
             for(let x = 0; x < this.x; x++){
                 if(allLayers[x][y].char != null){
@@ -81,12 +77,46 @@ class Field{
                     resultAsString += this.defaultCharacter + separate;
                 };
             };
-            resultAsString += "\n"
+            resultAsString += '\n'
         };
         return resultAsString
     }
+    round(center, radius, char=null){
+       let layer = this.build();
+       let firstCatet = Number();
+       let secondCatet = Number();
+       let distance = Number();
+       let distanceMin = radius * 10;
+       let begin = [center[0], center[1] - radius];
+       let mover = [center[0], center[1] - radius];
+       let points = new Array();
+       points.push([begin[0] - 1, begin[1] - 1].toString());
+       do{
+            for(let addX = -1; addX != 2; addX++){
+                for(let addY = -1; addY != 2; addY++){
+                    let check = [mover[0] + addX, mover[1] + addY];
+                    //console.log(check);
+                    if(points.includes([check[0], check[1]].toString())) continue;
+                    firstCatet = Math.abs(check[0] - center[0]) - 1;
+                    secondCatet = Math.abs(check[1] - center[1]) - 1;
+                    //console.log(firstCatet, secondCatet);
+                    distance = Math.sqrt(firstCatet ** 2 + secondCatet ** 2);
+                    //console.log(distance);
+                    if(distance < distanceMin && distance >= radius){
+                        distanceMin = distance;
+                        mover = check;
+                    };
+                    console.log("mv: ", mover, "dm: ", distanceMin);
+                };
+            };
+            //console.log(mover, begin);
+            //pointsX.push(mover[0]);
+            //pointsY.push(mover[1])
+       }while(mover[0] != begin[0] && mover[1] != begin[1]);
+       return layer;
+    }
     rect(begin, end, char=this.defaultCharacter){
-        let layer = this.buildLayer();
+        let layer = this.build();
         let stepSignX = 1;
         let stepSignY = 1;
         if( end[0] < begin[0] ){
@@ -95,16 +125,16 @@ class Field{
         if( end[1] < begin[1] ){
             stepSignY = -1;
         };
-        for(let stepX = begin[0] + 1; stepX <= end[0]; stepX += stepSignX){ // don't ask me: "Why your cycles aren't similar" - if this is working correctly - don't touch to this
+        for(let stepX = begin[0] + 1; stepX <= end[0]; stepX += stepSignX){ // don't ask me: 'Why your cycles aren't similar' - if this is working correctly - don't touch to this
             for(let stepY = begin[1]; stepY < end[1]; stepY += stepSignY){
-                //console.log( "x: ", stepX, " y: ", stepY, "c: ", char ); //
+                //console.log( 'x: ', stepX, ' y: ', stepY, 'c: ', char ); //
                 layer[stepX][stepY].char = char;
             };
         };
         return layer;
     }
-    line(begin, end, char="#"){
-        let layer = this.buildLayer();
+    line(begin, end, char='#'){
+        let layer = this.build();
         function buildByY(){
             let points = [];
             let koefX = 0;
@@ -131,7 +161,7 @@ class Field{
 					error -= 1;
                 };
 				points.push([x, y]);
-				//console.log("x: ", x, " y: ", y, " e: ", error); //
+				//console.log('x: ', x, ' y: ', y, ' e: ', error); //
 				error += cornerKoef
             };
             for(let coors = 0; coors < points.length - 1; coors++){
@@ -164,7 +194,7 @@ class Field{
 					error -= 1;
                 };
 				points.push([x, y]);
-				//console.log("x: ", x, " y: ", y, " e: ", error); //
+				//console.log('x: ', x, ' y: ', y, ' e: ', error); //
 				error += cornerKoef
             };
             for(let coors = 0; coors < points.length - 1; coors++){
@@ -182,21 +212,22 @@ class Field{
 
 let f = new Field(10, 10, null);
 // calls for testing
-f.layerSequence.push(f.rect([5, 5], [7, 7], "1"));
-f.layerSequence.push(f.line([5, 4], [9, 4], '0')); // a
-// f.layerSequence.push(f.line([9, 4], [5, 4], '1')); // a reverse
-// f.layerSequence.push(f.line([5, 4], [9, 2], '0')); // b
-// f.layerSequence.push(f.line([9, 2], [5, 4], '1')); // b reverse
-// f.layerSequence.push(f.line([5, 4], [9, 0], '0')); // c
-// f.layerSequence.push(f.line([9, 0], [5, 4], '1')); // c reverse
-// f.layerSequence.push(f.line([5, 4], [7, 0], '0')); // d
-// f.layerSequence.push(f.line([7, 0], [5, 4], '1')); // d reverse
-// f.layerSequence.push(f.line([5, 4], [5, 0], '0')); // e
-// f.layerSequence.push(f.line([5, 0], [5, 4], '1')); // e reverse
-let str = f.getSequenceAsString("|");
+//f.sequence.push(f.rect([5, 5], [7, 7], '1'));
+//f.sequence.push(f.line([5, 4], [9, 4], '0')); // a
+// f.sequence.push(f.line([9, 4], [5, 4], '1')); // a reverse
+// f.sequence.push(f.line([5, 4], [9, 2], '0')); // b
+// f.sequence.push(f.line([9, 2], [5, 4], '1')); // b reverse
+// f.sequence.push(f.line([5, 4], [9, 0], '0')); // c
+// f.sequence.push(f.line([9, 0], [5, 4], '1')); // c reverse
+// f.sequence.push(f.line([5, 4], [7, 0], '0')); // d
+// f.sequence.push(f.line([7, 0], [5, 4], '1')); // d reverse
+// f.sequence.push(f.line([5, 4], [5, 0], '0')); // e
+// f.sequence.push(f.line([5, 0], [5, 4], '1')); // e reverse
+//f.sequence.push(f.round([4, 5], 3, '0'))
+let str = f.getSequenceAsString('|');
 console.log(str);
 
 //test for custom errors
-// new IndexError(" 0,", " 0", "layer with index 5");
-// new AxesInfo("Layer with index 5", "x")
-// new BuildSuccess("Layer with index 5", [0, 0], [9, 9]);
+// new IndexError(' 0,', ' 0', 'layer with index 5');
+// new AxesInfo('Layer with index 5', 'x')
+// new BuildSuccess('Layer with index 5', [0, 0], [9, 9]);
