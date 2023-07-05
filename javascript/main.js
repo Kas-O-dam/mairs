@@ -82,38 +82,114 @@ class Field{
         return resultAsString
     }
     round(center, radius, char=null){
-       let layer = this.build();
-       let firstCatet = Number();
-       let secondCatet = Number();
-       let distance = Number();
-       let distanceMin = radius * 10;
-       let begin = [center[0], center[1] - radius];
-       let mover = [center[0], center[1] - radius];
-       let points = new Array();
-       points.push([begin[0] - 1, begin[1] - 1].toString());
-       do{
-            for(let addX = -1; addX != 2; addX++){
-                for(let addY = -1; addY != 2; addY++){
-                    let check = [mover[0] + addX, mover[1] + addY];
-                    //console.log(check);
-                    if(points.includes([check[0], check[1]].toString())) continue;
-                    firstCatet = Math.abs(check[0] - center[0]) - 1;
-                    secondCatet = Math.abs(check[1] - center[1]) - 1;
-                    //console.log(firstCatet, secondCatet);
-                    distance = Math.sqrt(firstCatet ** 2 + secondCatet ** 2);
-                    //console.log(distance);
-                    if(distance < distanceMin && distance >= radius){
-                        distanceMin = distance;
-                        mover = check;
-                    };
-                    console.log("mv: ", mover, "dm: ", distanceMin);
-                };
+        let layer = this.build();
+        let a = new Array(center[0], center[1] - radius);
+        let b = new Array(center[0] + radius, center[1]);
+        let c = new Array(center[0], center[1] + radius);
+        let d = new Array(center[0] - radius, center[1]);
+        let mover = a;
+        layer[a[0]][a[1]].char = char;
+        layer[b[0]][b[1]].char = char;
+        layer[c[0]][c[1]].char = char;
+        layer[d[0]][d[1]].char = char;
+        while(mover[0] != b[0] || mover[1] != b[1]){
+            let b1 = new Array(mover[0] + 1, mover[1]);
+            let b2 = new Array(mover[0], mover[1] + 1);
+            let b3 = new Array(mover[0] + 1, mover[1] + 1);
+            //console.debug(b1, b2, b3); //
+            let delta1 = new Array(Math.abs(center[0] - b1[0]), Math.abs(center[1] - b1[1]));
+            let delta2 = new Array(Math.abs(center[0] - b2[0]), Math.abs(center[1] - b2[1]));
+            let delta3 = new Array(Math.abs(center[0] - b3[0]), Math.abs(center[1] - b3[1]));
+            //console.debug(delta1, delta2, delta3); //
+            let hipotenuse1 = Math.sqrt(delta1[0]**2 + delta1[1]**2);
+            let hipotenuse2 = Math.sqrt(delta2[0]**2 + delta2[1]**2);
+            let hipotenuse3 = Math.sqrt(delta3[0]**2 + delta3[1]**2);
+            
+            let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+            let min = radius ** 2;
+            for(let i = 0; i < list.length; i++){
+                if(Math.abs(list[i] - radius) < Math.abs(min - radius)) min = list[i]
             };
-            //console.log(mover, begin);
-            //pointsX.push(mover[0]);
-            //pointsY.push(mover[1])
-       }while(mover[0] != begin[0] && mover[1] != begin[1]);
-       return layer;
+            if(min == hipotenuse1) mover = b1;
+            if(min == hipotenuse2) mover = b2;
+            if(min == hipotenuse3) mover = b3;
+            //console.debug(mover, list); //
+            layer[mover[0]][mover[1]].char = char;
+        };
+        while(mover[0] != c[0] || mover[1] != c[1]){
+            let c1 = new Array(mover[0] - 1, mover[1]);
+            let c2 = new Array(mover[0], mover[1] + 1);
+            let c3 = new Array(mover[0] - 1, mover[1] + 1);
+            //console.debug(c1, c2, c3); //
+            let delta1 = new Array(Math.abs(center[0] - c1[0]), Math.abs(center[1] - c1[1]));
+            let delta2 = new Array(Math.abs(center[0] - c2[0]), Math.abs(center[1] - c2[1]));
+            let delta3 = new Array(Math.abs(center[0] - c3[0]), Math.abs(center[1] - c3[1]));
+            //console.debug(delta1, delta2, delta3); //
+            let hipotenuse1 = Math.sqrt(delta1[0]**2 + delta1[1]**2);
+            let hipotenuse2 = Math.sqrt(delta2[0]**2 + delta2[1]**2);
+            let hipotenuse3 = Math.sqrt(delta3[0]**2 + delta3[1]**2);
+            
+            let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+            let min = radius ** 2;
+            for(let i = 0; i < list.length; i++){
+                if(Math.abs(list[i] - radius) < Math.abs(min - radius)) min = list[i]
+            };
+            if(min == hipotenuse1) mover = c1;
+            if(min == hipotenuse2) mover = c2;
+            if(min == hipotenuse3) mover = c3;
+            //console.debug(mover, list); //
+            layer[mover[0]][mover[1]].char = char;
+        };
+        while(mover[0] != d[0] || mover[1] != d[1]){
+            let d1 = new Array(mover[0] - 1, mover[1]);
+            let d2 = new Array(mover[0], mover[1] - 1);
+            let d3 = new Array(mover[0] - 1, mover[1] - 1);
+            //console.debug(d1, d2, d3); //
+            let delta1 = new Array(Math.abs(center[0] - d1[0]), Math.abs(center[1] - d1[1]));
+            let delta2 = new Array(Math.abs(center[0] - d2[0]), Math.abs(center[1] - d2[1]));
+            let delta3 = new Array(Math.abs(center[0] - d3[0]), Math.abs(center[1] - d3[1]));
+            //console.debug(delta1, delta2, delta3); //
+            let hipotenuse1 = Math.sqrt(delta1[0]**2 + delta1[1]**2);
+            let hipotenuse2 = Math.sqrt(delta2[0]**2 + delta2[1]**2);
+            let hipotenuse3 = Math.sqrt(delta3[0]**2 + delta3[1]**2);
+            
+            let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+            let min = radius ** 2;
+            for(let i = 0; i < list.length; i++){
+                if(Math.abs(list[i] - radius) < Math.abs(min - radius)) min = list[i]
+            };
+            if(min == hipotenuse1) mover = d1;
+            if(min == hipotenuse2) mover = d2;
+            if(min == hipotenuse3) mover = d3;
+            //console.debug(mover, list); //
+            layer[mover[0]][mover[1]].char = char;
+        };
+        while(mover[0] != a[0] || mover[1] != a[1]){
+            let a1 = new Array(mover[0] + 1, mover[1]);
+            let a2 = new Array(mover[0], mover[1] - 1);
+            let a3 = new Array(mover[0] + 1, mover[1] - 1);
+            //console.debug(a1, a2, a3); //
+            let delta1 = new Array(Math.abs(center[0] - a1[0]), Math.abs(center[1] - a1[1]));
+            let delta2 = new Array(Math.abs(center[0] - a2[0]), Math.abs(center[1] - a2[1]));
+            let delta3 = new Array(Math.abs(center[0] - a3[0]), Math.abs(center[1] - a3[1]));
+            //console.debug(delta1, delta2, delta3); //
+            let hipotenuse1 = Math.sqrt(delta1[0]**2 + delta1[1]**2);
+            let hipotenuse2 = Math.sqrt(delta2[0]**2 + delta2[1]**2);
+            let hipotenuse3 = Math.sqrt(delta3[0]**2 + delta3[1]**2);
+            
+            let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+            let min = radius ** 2;
+            for(let i = 0; i < list.length; i++){
+                if(Math.abs(list[i] - radius) < Math.abs(min - radius)) min = list[i]
+            };
+            if(min == hipotenuse1) mover = a1;
+            if(min == hipotenuse2) mover = a2;
+            if(min == hipotenuse3) mover = a3;
+            //console.debug(mover, list); //
+            layer[mover[0]][mover[1]].char = char;
+            console.info(mover[0] != a[0], mover[1] != a[1], a); //
+        };
+        return layer;
     }
     rect(begin, end, char=this.defaultCharacter){
         let layer = this.build();
@@ -210,7 +286,7 @@ class Field{
     };
 };
 
-let f = new Field(10, 10, null);
+//let f = new Field(50, 50, null);
 // calls for testing
 //f.sequence.push(f.rect([5, 5], [7, 7], '1'));
 //f.sequence.push(f.line([5, 4], [9, 4], '0')); // a
@@ -223,9 +299,10 @@ let f = new Field(10, 10, null);
 // f.sequence.push(f.line([7, 0], [5, 4], '1')); // d reverse
 // f.sequence.push(f.line([5, 4], [5, 0], '0')); // e
 // f.sequence.push(f.line([5, 0], [5, 4], '1')); // e reverse
-//f.sequence.push(f.round([4, 5], 3, '0'))
-let str = f.getSequenceAsString('|');
-console.log(str);
+//f.sequence.push(f.round([5, 5], 3, '0'));
+//f.sequence[0][5][5].char = '0';
+//let str = f.getSequenceAsString('|');
+//console.log(str);
 
 //test for custom errors
 // new IndexError(' 0,', ' 0', 'layer with index 5');
