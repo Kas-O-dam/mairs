@@ -44,6 +44,50 @@ impl Field{
          };
       };
    }
+   fn clone(&self, layer:&Vec<Vec<char>>) -> Vec<Vec<char>>{
+      let mut new_layer: Vec<Vec<char>> = Vec::new();
+      for step_x in 0..layer.len() {
+         new_layer.push(Vec::new());
+         let last_vec = new_layer.len() - 1;
+         for step_y in 0..layer[0].len() {
+            new_layer[last_vec].push(layer[step_x][step_y]);
+         };
+      };
+      new_layer
+   }
+   fn paste(&self, layer:&Vec<Vec<char>>, slice:Vec<Vec<char>>, begin:[i32; 2]) -> Vec<Vec<char>>{
+      let mut new_layer: Vec<Vec<char>> = self.clone(layer);
+      for step_x in begin[0] as usize..slice.len() {
+         for step_y in begin[1] as usize..slice[0].len() {
+            new_layer[step_x][step_y] = slice[step_x][step_y];
+         };
+      };
+      new_layer
+   }
+   fn cut(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> (Vec<Vec<char>>, Vec<Vec<char>>){
+      let mut slice: Vec<Vec<char>> = Vec::new();
+      let mut new_layer: Vec<Vec<char>> = self.clone(layer);
+      for step_x in begin[0]..end[0] - 1 {
+         slice.push(Vec::new());
+         let last_slice_row: usize = slice.len() - 1;
+         for step_y in begin[1]..end[1] - 1 {
+            slice[last_slice_row].push(layer[step_x as usize][step_y as usize]);
+            new_layer[step_x as usize][step_y as usize] = self.default_char;
+         };
+      };
+      (new_layer, slice)
+   }
+   fn copy(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> Vec<Vec<char>>{
+      let mut slice: Vec<Vec<char>> = Vec::new();
+      for step_x in begin[0]..end[0] - 1 {
+         slice.push(Vec::new());
+         let last_slice_row: usize = slice.len() - 1;
+         for step_y in begin[1]..end[1] - 1 {
+            slice[last_slice_row].push(layer[step_x as usize][step_y as usize]);
+         };
+      };
+      slice
+   }
    // GEOMETRY
    /*
        ___     _____    ____    _______
@@ -80,17 +124,6 @@ impl Field{
 		| |____  | |  | | \\ |  | |----'
 		|_____|  |_|  |_|  \_|  |______|
    */
-   fn copy(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> Vec<Vec<char>>{
-      let mut slice: Vec<Vec<char>> = Vec::new();
-      for step_x in begin[0]..end[0] - 1 {
-         slice.push(Vec::new());
-         let last_slice_row: usize = slice.len() - 1;
-         for step_y in begin[1]..end[1] - 1 {
-            slice[last_slice_row].push(layer[step_x as usize][step_y as usize]);
-         };
-      };
-      slice
-   }
    fn line(&mut self, begin:[i32; 2], end:[i32; 2], sym:char) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = self.build_layer();
       if (begin[0] - end[0]).abs() >= (begin[1]-end[1]).abs(){
@@ -183,8 +216,9 @@ fn main(){
    //layer.seq.push(layer.line([7, 0], [5, 4], '1')); // d reverse
    //layer.seq.push(layer.line([5, 4], [5, 0], '0')); // e
    //layer.seq.push(layer.line([5, 0], [5, 4], '1')); // e reverse
-
-   println!("{:#?}", layer.copy(&layer.seq[0], [3, 3], [8, 8]));
+   //let peace = layer.cut(&layer.seq[0], [3, 3], [8, 8]);
+   //println!("{:#?}", layer.paste(&layer.seq[0], peace.1, [3, 3]));
+   //println!("{:#?}", layer.copy(&layer.seq[0], [3, 3], [8, 8]));
    //let new_layer = layer.rect([7, 8], [3, 3], '0');
    //layer.seq.push(new_layer);
    layer.print();
