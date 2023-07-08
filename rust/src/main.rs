@@ -6,6 +6,11 @@ struct Field{
    y: usize,
    default_char: char,
 }
+struct Layer {
+   matrix: Vec<Vec<char>>,
+   x: usize,
+   y: usize
+}
 impl Field{
    fn build_layer(&mut self) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = Vec::new();
@@ -37,10 +42,21 @@ impl Field{
    }
    fn print(&self){
       let all_layers = self.unite(&self.seq);
+
       for y in 0..self.y {
          println!("");
          for x in 0..self.x {
             print!("{}", all_layers[x][y]);
+         };
+      };
+   }
+   fn print_sepchar(&self, sepchar:char){
+      let all_layers = self.unite(&self.seq);
+
+      for y in 0..self.y {
+         println!("");
+         for x in 0..self.x {
+            print!("{}{}", all_layers[x][y], sepchar);
          };
       };
    }
@@ -89,6 +105,119 @@ impl Field{
       slice
    }
    // GEOMETRY
+   fn round(&mut self, center:[i32; 2], radius:i32, char:char) -> Vec<Vec<char>>{
+      let mut layer = self.build_layer();
+      let a = [center[0], center[1] - radius];
+      let b = [center[0] + radius, center[1]];
+      let c = [center[0], center[1] + radius];
+      let d = [center[0] - radius, center[1]];
+      let mut  mover = a;
+      layer[a[0] as usize][a[1] as usize] = char;
+      layer[b[0] as usize][b[1] as usize] = char;
+      layer[c[0] as usize][c[1] as usize] = char;
+      layer[d[0] as usize][d[1] as usize] = char;
+      while mover[0] != b[0] || mover[1] != b[1] {
+         let b1 = [mover[0] + 1, mover[1]];
+         let b2 = [mover[0], mover[1] + 1];
+         let b3 = [mover[0] + 1, mover[1] + 1];
+         //console.debug(b1, b2, b3); //
+         let delta1 = [(center[0] - b1[0]).abs(), (center[1] - b1[1]).abs()];
+         let delta2 = [(center[0] - b2[0]).abs(), (center[1] - b2[1]).abs()];
+         let delta3 = [(center[0] - b3[0]).abs(), (center[1] - b3[1]).abs()];
+         //console.debug(delta1, delta2, delta3); //
+         let hipotenuse1 = ((delta1[0].pow(2) + delta1[1].pow(2)) as f32).sqrt() as i32;
+         let hipotenuse2 = ((delta2[0].pow(2) + delta2[1].pow(2)) as f32).sqrt() as i32;
+         let hipotenuse3 = ((delta3[0].pow(2) + delta3[1].pow(2)) as f32).sqrt() as i32;
+         
+         let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+         let mut min = radius.pow(2);
+         for i in 0..list.len() {
+            if (list[i] - radius).abs() < (min - radius).abs() {
+               min = list[i]};
+         };
+         if min == hipotenuse1 { mover = b1 };
+         if min == hipotenuse2 { mover = b2 };
+         if min == hipotenuse3 { mover = b3 };
+         //console.debug(mover, list); //
+         layer[mover[0] as usize][mover[1] as usize] = char;
+      };
+      while mover[0] != c[0] || mover[1] != c[1] {
+         let c1 = [mover[0] - 1, mover[1]];
+         let c2 = [mover[0], mover[1] + 1];
+         let c3 = [mover[0] - 1, mover[1] + 1];
+         //console.debug(c1, c2, c3); //
+         let delta1 = [(center[0] - c1[0]).abs(), (center[1] - c1[1]).abs()];
+         let delta2 = [(center[0] - c2[0]).abs(), (center[1] - c2[1]).abs()];
+         let delta3 = [(center[0] - c3[0]).abs(), (center[1] - c3[1]).abs()];
+         //console.debug(delta1, delta2, delta3); //
+         let hipotenuse1 = ((delta1[0].pow(2) + delta1[1].pow(2)) as f32).sqrt() as i32;
+         let hipotenuse2 = ((delta2[0].pow(2) + delta2[1].pow(2)) as f32).sqrt() as i32;
+         let hipotenuse3 = ((delta3[0].pow(2) + delta3[1].pow(2)) as f32).sqrt() as i32;
+         
+         let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+         let mut  min = radius.pow(2);
+         for i in 0..list.len() {
+            if (list[i] - radius).abs() < (min - radius).abs() {
+               min = list[i]};
+         };
+         if min == hipotenuse1 { mover = c1 };
+         if min == hipotenuse2 { mover = c2 };
+         if min == hipotenuse3 { mover = c3 };
+         //console.debug(mover, list); //
+         layer[mover[0] as usize][mover[1] as usize] = char;
+      };
+      while mover[0] != d[0] || mover[1] != d[1] {
+          let d1 = [mover[0] - 1, mover[1]];
+          let d2 = [mover[0], mover[1] - 1];
+          let d3 = [mover[0] - 1, mover[1] - 1];
+          //console.debug(d1, d2, d3); //
+          let delta1 = [(center[0] - d1[0]).abs(), (center[1] - d1[1]).abs()];
+          let delta2 = [(center[0] - d2[0]).abs(), (center[1] - d2[1]).abs()];
+          let delta3 = [(center[0] - d3[0]).abs(), (center[1] - d3[1]).abs()];
+          //console.debug(delta1, delta2, delta3); //
+          let hipotenuse1 = ((delta1[0].pow(2) + delta1[1].pow(2)) as f32).sqrt() as i32;
+          let hipotenuse2 = ((delta2[0].pow(2) + delta2[1].pow(2)) as f32).sqrt() as i32;
+          let hipotenuse3 = ((delta3[0].pow(2) + delta3[1].pow(2)) as f32).sqrt() as i32;
+          
+          let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+          let mut min = radius.pow(2);
+          for i in 0..list.len() {
+            if (list[i] - radius).abs() < (min - radius).abs() {
+               min = list[i]};
+         };
+          if min == hipotenuse1 { mover = d1 };
+          if min == hipotenuse2 { mover = d2 };
+          if min == hipotenuse3 { mover = d3 };
+          //console.debug(mover, list); //
+          layer[mover[0] as usize][mover[1] as usize] = char;
+      };
+      while mover[0] != a[0] || mover[1] != a[1] {
+          let a1 = [mover[0] + 1, mover[1]];
+          let a2 = [mover[0], mover[1] - 1];
+          let a3 = [mover[0] + 1, mover[1] - 1];
+          //console.debug(a1, a2, a3); //
+          let delta1 = [(center[0] - a1[0]).abs(), (center[1] - a1[1]).abs()];
+          let delta2 = [(center[0] - a2[0]).abs(), (center[1] - a2[1]).abs()];
+          let delta3 = [(center[0] - a3[0]).abs(), (center[1] - a3[1]).abs()];
+          //console.debug(delta1, delta2, delta3); //
+          let hipotenuse1 = ((delta1[0].pow(2) + delta1[1].pow(2)) as f32).sqrt() as i32;
+          let hipotenuse2 = ((delta2[0].pow(2) + delta2[1].pow(2)) as f32).sqrt() as i32;
+          let hipotenuse3 = ((delta3[0].pow(2) + delta3[1].pow(2)) as f32).sqrt() as i32;
+          
+          let list = [hipotenuse1, hipotenuse2, hipotenuse3];
+          let mut min = radius.pow(2);
+          for i in 0..list.len() {
+            if (list[i] - radius).abs() < (min - radius).abs() {
+               min = list[i]};
+         };
+          if min == hipotenuse1 { mover = a1 };
+          if min == hipotenuse2 { mover = a2 };
+          if min == hipotenuse3 { mover = a3 };
+          //console.debug(mover, list); //
+          layer[mover[0] as usize][mover[1] as usize] = char;
+      };
+      return layer;
+  }
    /*
        ___     _____    ____    _______
       |  _ \  | ____|  / ,-._\ |__   __|
@@ -193,8 +322,8 @@ impl Field{
    }
 }
 fn main(){
-   const X: usize = 10;
-   const Y: usize = 10;
+   const X: usize = 40;
+   const Y: usize = 20;
    let mut layer = Field{
       seq: Vec::new(),
       x: X,
@@ -204,15 +333,15 @@ fn main(){
 
    // "exams" for functions
    
-   let mut new_line = layer.line([5, 4], [9, 4], '0');
-   layer.seq.push(new_line); // a
+   //let mut new_line = layer.line([5, 4], [9, 4], '0');
+   //layer.seq.push(new_line); // a
    //layer.seq.push(layer.line([9, 4], [5, 4], '1')); // a reverse
    //layer.seq.push(layer.line([5, 4], [9, 2], '0')); // b
    //layer.seq.push(layer.line([9, 2], [5, 4], '1')); // b reverse
    //layer.seq.push(layer.line([5, 4], [9, 0], '0')); // c
    //layer.seq.push(layer.line([9, 0], [5, 4], '1')); // c reverse
-   new_line = layer.line([5, 4], [7, 0], '+');
-   layer.seq.push(new_line); // d
+   //new_line = layer.line([5, 4], [7, 0], '+');
+   //layer.seq.push(new_line); // d
    //layer.seq.push(layer.line([7, 0], [5, 4], '1')); // d reverse
    //layer.seq.push(layer.line([5, 4], [5, 0], '0')); // e
    //layer.seq.push(layer.line([5, 0], [5, 4], '1')); // e reverse
@@ -221,5 +350,7 @@ fn main(){
    //println!("{:#?}", layer.copy(&layer.seq[0], [3, 3], [8, 8]));
    //let new_layer = layer.rect([7, 8], [3, 3], '0');
    //layer.seq.push(new_layer);
-   layer.print();
+   //let new_round = layer.round([20, 10], 8, '0');
+   //layer.seq.push(new_round);
+   //layer.print_sepchar('|');
 }
