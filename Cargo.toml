@@ -1,6 +1,6 @@
 [package]
-name = "mai"
-version = "0.1.0"
+name = "mairs"
+version = "0.0.0" # We are programers! BEGIN FROM ZERO!!!
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
