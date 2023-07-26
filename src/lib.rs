@@ -1,18 +1,18 @@
 #[derive(Debug)]
 
 pub struct Field{
-   seq: Vec<Vec<Vec<char>>>,
-   x: usize,
-   y: usize,
-   default_char: char,
+   pub seq: Vec<Vec<Vec<char>>>,
+   pub x: usize,
+   pub y: usize,
+   pub default_char: char,
 }
-pub struct Layer {
+struct Layer {
    matrix: Vec<Vec<char>>,
    x: usize,
    y: usize
 }
 impl Field{
-   fn build_layer(&mut self) -> Vec<Vec<char>>{
+   pub fn build_layer(&mut self) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = Vec::new();
       for _step_x in 0..self.x {
          let empty_vec: Vec<char> = Vec::new();
@@ -23,7 +23,7 @@ impl Field{
       };
       layer
    }
-   fn unite(&self, layers:&Vec<Vec<Vec<char>>>) -> Vec<Vec<char>>{
+   pub fn unite(&self, layers:&Vec<Vec<Vec<char>>>) -> Vec<Vec<char>>{
       //println!("{:?}", layers);
       let mut layer_result: Vec<Vec<char>> = layers[0].clone();
       //println!("{:?}", layer_result);
@@ -40,7 +40,7 @@ impl Field{
       //println!("{:?}", layer_result);
       layer_result
    }
-   fn print(&self){
+   pub fn print(&self){
       let all_layers = self.unite(&self.seq);
 
       for y in 0..self.y {
@@ -50,7 +50,7 @@ impl Field{
          };
       };
    }
-   fn print_sepchar(&self, sepchar:char){
+   pub fn print_sepchar(&self, sepchar:char){
       let all_layers = self.unite(&self.seq);
 
       for y in 0..self.y {
@@ -60,7 +60,7 @@ impl Field{
          };
       };
    }
-   fn clone(&self, layer:&Vec<Vec<char>>) -> Vec<Vec<char>>{
+   pub fn clone(&self, layer:&Vec<Vec<char>>) -> Vec<Vec<char>>{
       let mut new_layer: Vec<Vec<char>> = Vec::new();
       for step_x in 0..layer.len() {
          new_layer.push(Vec::new());
@@ -71,7 +71,7 @@ impl Field{
       };
       new_layer
    }
-   fn paste(&self, layer:&Vec<Vec<char>>, slice:Vec<Vec<char>>, begin:[i32; 2]) -> Vec<Vec<char>>{
+   pub fn paste(&self, layer:&Vec<Vec<char>>, slice:Vec<Vec<char>>, begin:[i32; 2]) -> Vec<Vec<char>>{
       let mut new_layer: Vec<Vec<char>> = self.clone(layer);
       for step_x in begin[0] as usize..slice.len() {
          for step_y in begin[1] as usize..slice[0].len() {
@@ -80,7 +80,7 @@ impl Field{
       };
       new_layer
    }
-   fn cut(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> (Vec<Vec<char>>, Vec<Vec<char>>){
+   pub fn cut(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> (Vec<Vec<char>>, Vec<Vec<char>>){
       let mut slice: Vec<Vec<char>> = Vec::new();
       let mut new_layer: Vec<Vec<char>> = self.clone(layer);
       for step_x in begin[0]..end[0] - 1 {
@@ -93,7 +93,7 @@ impl Field{
       };
       (new_layer, slice)
    }
-   fn copy(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> Vec<Vec<char>>{
+   pub fn copy(&self, layer:&Vec<Vec<char>>, begin:[i32; 2], end:[i32; 2]) -> Vec<Vec<char>>{
       let mut slice: Vec<Vec<char>> = Vec::new();
       for step_x in begin[0]..end[0] - 1 {
          slice.push(Vec::new());
@@ -105,7 +105,7 @@ impl Field{
       slice
    }
    // GEOMETRY
-   fn round(&mut self, center:[i32; 2], radius:i32, char:char) -> Vec<Vec<char>>{
+   pub fn round(&mut self, center:[i32; 2], radius:i32, char:char) -> Vec<Vec<char>>{
       let mut layer = self.build_layer();
       let a = [center[0], center[1] - radius];
       let b = [center[0] + radius, center[1]];
@@ -225,7 +225,7 @@ impl Field{
       | |\ \  | ,---' \ \____     | |
       |_| \_\ |_____|  \____/     |_|
    */
-   fn rect(&mut self, begin:[usize; 2], end:[usize; 2], sym:char) -> Vec<Vec<char>>{
+   pub fn rect(&mut self, begin:[usize; 2], end:[usize; 2], sym:char) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = self.build_layer();
       let mut cycle_begin_x = begin[0];
       let mut cycle_end_x = end[0];
@@ -253,7 +253,7 @@ impl Field{
 		| |____  | |  | | \\ |  | |----'
 		|_____|  |_|  |_|  \_|  |______|
    */
-   fn line(&mut self, begin:[i32; 2], end:[i32; 2], sym:char) -> Vec<Vec<char>>{
+   pub fn line(&mut self, begin:[i32; 2], end:[i32; 2], sym:char) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = self.build_layer();
       if (begin[0] - end[0]).abs() >= (begin[1]-end[1]).abs(){
          println!("build by x"); //debug
