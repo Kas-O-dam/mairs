@@ -6,16 +6,12 @@ pub struct Field{
    pub y: usize,
    pub default_char: char,
 }
-struct Layer {
-   matrix: Vec<Vec<char>>,
-   x: usize,
-   y: usize
-}
+
 impl Field{
    pub fn build_layer(&mut self) -> Vec<Vec<char>>{
-      let mut layer: Vec<Vec<char>> = Vec::new();
+      let mut layer: Vec<Vec<char>> = Vec::with_capacity(self.x);
       for _step_x in 0..self.x {
-         let empty_vec: Vec<char> = Vec::new();
+         let empty_vec: Vec<char> = Vec::with_capacity(self.y);
          layer.push(empty_vec);
          for _step_y in 0..self.y {
             layer[_step_x].push(self.default_char);
@@ -105,6 +101,29 @@ impl Field{
       slice
    }
    // GEOMETRY
+   pub fn horizontal(&mut self, mut x:[usize; 2], y:usize, char:char) -> Vec<Vec<char>>{
+      let mut layer: Vec<Vec<char>> = self.build_layer();
+      if x[0] > x[1] {(x[0], x[1]) = (x[1], x[0])};
+      for step in x[0]..x[1] {
+         layer[step][y] = char;
+      }
+      layer
+   }
+   pub fn vertical(&mut self, x:usize, mut y:[usize; 2], char:char) -> Vec<Vec<char>>{
+      let mut layer: Vec<Vec<char>> = self.build_layer();
+      if y[0] > y[1] {(y[0], y[1]) = (y[1], y[0])};
+      for step in y[0]..y[1] {
+         layer[x][step] = char;
+      }
+      layer
+   }
+   /*
+       ___     ____    _    _   _    _   __
+      |  _ \  / __ \  | |  | | | \  | | |  _',
+      | '-'/ | /  \ | | |  | | | \\ | | | | \ \
+      | |\ \ | \__/ | | \__/ | | |\\| | | |_/ /
+      |_| \_\ \____/   \____/  |_| \__| |__,-'
+   */
    pub fn round(&mut self, center:[i32; 2], radius:i32, char:char) -> Vec<Vec<char>>{
       let mut layer = self.build_layer();
       let a = [center[0], center[1] - radius];
@@ -225,25 +244,17 @@ impl Field{
       | |\ \  | ,---' \ \____     | |
       |_| \_\ |_____|  \____/     |_|
    */
-   pub fn rect(&mut self, begin:[usize; 2], end:[usize; 2], sym:char) -> Vec<Vec<char>>{
+   pub fn rect(&mut self, mut begin:[usize; 2], mut end:[usize; 2], sym:char) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = self.build_layer();
-      let mut cycle_begin_x = begin[0];
-      let mut cycle_end_x = end[0];
-      let mut cycle_begin_y = begin[1];
-      let mut cycle_end_y = end[1];
-      if begin[0] > end[0] {
-         cycle_begin_x = end[0];
-         cycle_end_x = begin[0];
-      };
-      if begin[1] > end[1] {
-         cycle_begin_y = end[1];
-         cycle_end_y = begin[1];
-      };
-      for step_x in cycle_begin_x..cycle_end_x + 1 {
-         for step_y in cycle_begin_y..cycle_end_y + 1 {
-            layer[step_x][step_y] = sym;
-         };
-      };
+      //if user want draw reverse rect
+      if begin[0] > end[0] { (begin[0], end[0]) = (end[0], begin[0]) };
+      if begin[1] > end[1] { (begin[1], end[1]) = (end[1], begin[1]) };
+      // without ones, function doesn't working. DON'T TOUCH TO THAT!
+      let line1 = self.horizontal([begin[0], end[0] - 1], begin[1], sym);
+      let line2 = self.horizontal([end[0], begin[0]], end[1] - 1, sym);
+      let line3 = self.vertical(begin[0], [begin[1], end[1]], sym);
+      let line4 = self.vertical(end[0] - 1, [end[1], begin[1]], sym);
+      layer = self.unite(&vec![layer, line1, line2, line3, line4]);
       layer
    }
    /*
@@ -330,7 +341,9 @@ fn main(){
       y: Y,
       default_char: '.',
    };
-
+   let rect = layer.rect([3, 3], [10, 10], '0');
+   layer.seq.push(rect);
+   layer.print();
    // "exams" for functions
    
    //let mut new_line = layer.line([5, 4], [9, 4], '0');
