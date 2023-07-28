@@ -61,7 +61,7 @@ impl Field{
       for step_x in 0..layer.len() {
          new_layer.push(Vec::new());
          let last_vec = new_layer.len() - 1;
-         for step_y in 0..layer[0].len() {
+         for step_y in 0..layer[0].len() - 1 {
             new_layer[last_vec].push(layer[step_x][step_y]);
          };
       };
@@ -69,8 +69,8 @@ impl Field{
    }
    pub fn paste(&self, layer:&Vec<Vec<char>>, slice:Vec<Vec<char>>, begin:[i32; 2]) -> Vec<Vec<char>>{
       let mut new_layer: Vec<Vec<char>> = self.clone(layer);
-      for step_x in begin[0] as usize..slice.len() {
-         for step_y in begin[1] as usize..slice[0].len() {
+      for step_x in begin[0] as usize..slice.len() - 1 {
+         for step_y in begin[1] as usize..slice[0].len() - 1 {
             new_layer[step_x][step_y] = slice[step_x][step_y];
          };
       };
