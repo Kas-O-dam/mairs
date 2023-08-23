@@ -10,10 +10,10 @@ pub struct Field{
 impl Field{
    pub fn build_layer(&mut self) -> Vec<Vec<char>>{
       let mut layer: Vec<Vec<char>> = Vec::with_capacity(self.x);
-      for _step_x in 0..self.x + 1 {
+      for _step_x in 0..self.x {
          let empty_vec: Vec<char> = Vec::with_capacity(self.y);
          layer.push(empty_vec);
-         for _step_y in 0..self.y + 1 {
+         for _step_y in 0..self.y {
             layer[_step_x].push(self.default_char);
          };
       };
@@ -61,7 +61,7 @@ impl Field{
       for step_x in 0..layer.len() {
          new_layer.push(Vec::new());
          let last_vec = new_layer.len() - 1;
-         for step_y in 0..layer[0].len() - 1 {
+         for step_y in 0..layer[0].len() {
             new_layer[last_vec].push(layer[step_x][step_y]);
          };
       };
@@ -71,7 +71,7 @@ impl Field{
       let mut new_layer: Vec<Vec<char>> = self.clone(layer);
       for step_x in 0..slice.len() {
          for step_y in 0..slice[0].len() {
-            new_layer[begin[0] + step_x][begin[1] + step_y] = slice[step_x][step_y];
+            new_layer[begin[0] + step_y][begin[1] + step_x] = slice[step_x][step_y]; //that, what x & y did replaced have only one reason - it is work correctly...
          };
       };
       new_layer
@@ -79,10 +79,11 @@ impl Field{
    pub fn cut(&self, layer:&Vec<Vec<char>>, begin:[usize; 2], end:[usize; 2]) -> (Vec<Vec<char>>, Vec<Vec<char>>){
       let mut slice: Vec<Vec<char>> = Vec::new();
       let mut new_layer: Vec<Vec<char>> = self.clone(layer);
-      for step_x in begin[0]..end[0] - 1 {
+      println!("{}", new_layer[0].len());
+      for step_x in begin[0]..end[0] {
          slice.push(Vec::new());
          let last_slice_row: usize = slice.len() - 1;
-         for step_y in begin[1]..end[1] - 1 {
+         for step_y in begin[1]..end[1] {
             slice[last_slice_row].push(layer[step_x][step_y]);
             new_layer[step_x][step_y] = self.default_char;
          };
@@ -333,12 +334,6 @@ impl Field{
    }
 }
 fn main(){
-   const X: usize = 40;
-   const Y: usize = 20;
-   let mut layer = Field{
-      seq: Vec::new(),
-      x: X,
-      y: Y,
-      default_char: '.',
-   };
+   //const X: usize = 40;
+   //const Y: usize = 20;
 }
