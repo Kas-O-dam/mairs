@@ -4,11 +4,8 @@ And I'm begin from a main of this - struct Field. In fact there is a only one st
 ## Layers
 I shall set layers as a enumerate or struct, but now there is a only two-level vector with chars.
 Layer is a canva with specified width & height. meaning of layers is a highing easy to edit canva, for example you do the game and you need everyone "mainloop" iteration draw in first background, then other static thing, then main heros, but with layers you can make a background and never touch to that. So it is show like that:
-  ________
- /       /__layer for hero, which you always use
-/_______//__for something, flowers, rocks...
-/_______//__background
-/_______/
+
+![layers image](LAYERS.png)
 
 Cool? - Yes.
 The Field has a property "seq" (sequence), that need for collect your layers, I descript all later, only collect your layers here.
