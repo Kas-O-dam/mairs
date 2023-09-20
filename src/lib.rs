@@ -78,7 +78,7 @@ impl<'a> Layer <'a> {
    */
    pub fn line(&mut self, begin:[usize; 2], end:[usize; 2], sym:&'a Character){
       if (begin[0] as i32 - end[0] as i32).abs() >= (begin[1] as i32 - end[1] as i32).abs(){
-         println!("build by x"); //debug
+         //println!("build by x"); //debug
          let mut points: Vec<[usize; 2]> = Vec::new();
          let mut koef_y: i32 = 1;
          let mut cycle_begin: usize = begin[0];
@@ -109,7 +109,7 @@ impl<'a> Layer <'a> {
             self.context[coors[0]][coors[1]] = sym;
          };
       }else{
-         println!("build by y"); //debug
+         //println!("build by y"); //debug
          let mut points: Vec<[usize; 2]> = Vec::new();
          let mut koef_x: i32 = 1;
          let mut cycle_begin: usize = begin[1];
