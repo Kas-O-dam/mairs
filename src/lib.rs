@@ -321,50 +321,5 @@ impl Field<'_>{
 }
 
 fn main(){
-   let aa = Character{context: '<', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ab = Character{context: '(', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ac = Character{context: '°', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ad = Character{context: ' ', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ae = Character{context: ')', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ag = Character{context: '/', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ah = Character{context: '=', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let ai = Character{context: '|', red: 0, green: 255, blue: 0, unicode: "".to_string()};
-   let land_char: Character = Character {context: '*', red: 192, green: 128, blue: 32, unicode: "".to_string()};
-   let air_char: Character = Character {context: ' ', red: 0, green: 0, blue: 0, unicode: "".to_string()};
-   let dino: Vec<Vec<&Character>> = vec![
-      vec![
-         &aa,
-         &ab,
-         &ac,
-         &ad,
-         &ae
-      ],
-      vec![
-         &aa,
-         &ag,
-         &ad,
-         &ah,
-         &ad
-      ],
-      vec![
-         &ag,
-         &ai,
-         &ai,
-         &ad,
-         &ad
-      ],
-   ];
    
-   let mut field: Field = Field {seq: Vec::new(), default_char: ' '};
-   let mut main_layer: Layer = Layer {x: 32, y: 16, context: Vec::new()};
-   main_layer.build(&air_char);   
-   main_layer.horizontal([0, 32], 15, &land_char);
-   
-   let mut dino_layer: Layer = Layer {x: 32, y: 16, context: Vec::new()};
-   dino_layer.build(&air_char);
-   dino_layer.paste(&dino, [0, 12]);
-   
-   field.seq.push(&mut main_layer);
-   field.seq.push(&mut dino_layer);
-   field.print()
 }
